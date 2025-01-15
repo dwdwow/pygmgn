@@ -172,8 +172,8 @@ class GMGNSolClient:
                             token_in_address: str,
                             token_out_address: str,
                             in_amount: str,
-                            slippage: float,
-                            swap_mode: SwapMode,
+                            slippage: float=2.5,
+                            swap_mode: SwapMode=SwapMode.EXACT_IN,
                             fee: float=0.00001,
                             from_address: str=None,
                             is_anti_mev: bool=False,
@@ -211,6 +211,16 @@ class GMGNSolClient:
         if not from_address:
             params['from_address'] = self.signer_address
         return await self.get('sol/tx/get_swap_route', **params)
+    
+    async def test_speed(self):
+        import statistics
+        times = []
+        for i in range(10):
+            start_time = time.time()
+            await self.get_swap_route(token_in_address='So11111111111111111111111111111111111111112', token_out_address='HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC', in_amount='10000000')
+            end_time = time.time()
+            times.append(end_time - start_time)
+        print(f'Time taken: {times}, avg: {sum(times) / len(times)} seconds, std: {statistics.stdev(times)}')
     
     async def submit_tx(self, signed_tx: str) -> SubmitTxResponse:
         return await self.post('sol/tx/submit_signed_transaction', body={'signed_tx': signed_tx})
@@ -318,22 +328,24 @@ if __name__ == '__main__':
     print('signer address')
     print(client.signer_address)
     
-    token_in_address='So11111111111111111111111111111111111111112'
-    token_out_address='HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC'
-    in_amount='10000000'
-    slippage=10
-    swap_mode=SwapMode.EXACT_IN
+    asyncio.run(client.test_speed())
     
-    quote, sub_resp, status_resp = asyncio.run(client.swap(
-        token_in_address=token_in_address,
-        token_out_address=token_out_address,
-        in_amount=in_amount,
-        slippage=slippage,
-        swap_mode=swap_mode,
-    ))
-    print('quote')
-    print(quote)
-    print('sub_resp')
-    print(sub_resp)
-    print('status_resp')
-    print(status_resp)
+    # token_in_address='So11111111111111111111111111111111111111112'
+    # token_out_address='HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC'
+    # in_amount='10000000'
+    # slippage=10
+    # swap_mode=SwapMode.EXACT_IN
+    
+    # quote, sub_resp, status_resp = asyncio.run(client.swap(
+    #     token_in_address=token_in_address,
+    #     token_out_address=token_out_address,
+    #     in_amount=in_amount,
+    #     slippage=slippage,
+    #     swap_mode=swap_mode,
+    # ))
+    # print('quote')
+    # print(quote)
+    # print('sub_resp')
+    # print(sub_resp)
+    # print('status_resp')
+    # print(status_resp)
