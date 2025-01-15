@@ -18,6 +18,7 @@ from loguru import logger
 
 Data = TypeVar('Data')
 
+
 ResponseData = TypedDict('ResponseData', {
     'code': int,
     'data': Data,
@@ -254,10 +255,10 @@ class GMGNSolClient:
                       * ,
                     token_in_address: str,
                     token_out_address: str,
-                    in_amount: str, # unit is lamports, 100000000=0.1SOL
-                    slippage: float, # 10=10%
+                    in_amount: str,
+                    slippage: float,
                     swap_mode: SwapMode,
-                    fee: float,
+                    fee: float=0.00001,
                     from_address: str=None,
                     is_anti_mev: bool=False,
                     partner: str=None,
@@ -322,7 +323,6 @@ if __name__ == '__main__':
     in_amount='10000000'
     slippage=10
     swap_mode=SwapMode.EXACT_IN
-    fee=0.0001
     
     quote, sub_resp, status_resp = asyncio.run(client.swap(
         token_in_address=token_in_address,
@@ -330,7 +330,6 @@ if __name__ == '__main__':
         in_amount=in_amount,
         slippage=slippage,
         swap_mode=swap_mode,
-        fee=fee,
     ))
     print('quote')
     print(quote)

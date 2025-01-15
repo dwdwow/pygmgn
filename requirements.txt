@@ -1,0 +1,4 @@
+loguru==0.7.3
+pycryptodome==3.21.0
+Requests==2.32.3
+solders==0.23.0
